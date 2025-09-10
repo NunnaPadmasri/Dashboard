@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin & Student Dashboard</title>
+<style>
+/* ---------------- General ---------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #46c0f9, #de63b9);
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    max-width: 900px;
+    width: 95%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+}
+
+h1, h2 {
+    text-align: center;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+input, textarea, select, button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #764ba2;
+    box-shadow: 0 0 8px rgba(118, 75, 162, 0.5);
+}
+
+button {
+    font-weight: 600;
+    transition: all 0.2s ease;
+    background: #764ba2;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+/* ---------------- Lists ---------------- */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f7f7f7;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s ease;
+    flex-wrap: wrap;
+}
+
+li:hover {
+    background: #e1e7f0;
+}
+
+/* ---------------- Buttons ---------------- */
+.action-btn, .edit-btn, .small-btn {
+    padding: 5px 8px;
+    font-size: 0.85rem;
+}
+
+.action-btn {
+    background: #e74c3c;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.edit-btn {
+    background: #2ecc71;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.small-btn {
+    background: #764ba2;
+    color: white;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+/* ---------------- Links ---------------- */
+a {
+    color: #764ba2;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+    transition: 0.2s;
+}
+
+a:hover {
+    color: #667eea;
+}
+
+/* ---------------- Hidden ---------------- */
+.hidden { display: none; }
+
+/* ---------------- Cards ---------------- */
+.cards {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.card {
+    flex: 1 1 45%;
+    background: #764ba2;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* ---------------- Details Box ---------------- */
+.details-box {
+    background: #f1f3f6;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+}
+
+/* ---------------- Center Forms ---------------- */
+#roleSection, #adminLogin, #studentLogin, #studentRegister {
+    max-width: 400px;
+    margin: auto;
+}
+
+/* ---------------- Flex Inputs with Buttons ---------------- */
+.input-btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.input-btn-group input,
+.input-btn-group textarea {
+    flex: 1;
+    margin: 0;
+}
+
+.input-btn-group button {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  .cards { flex-direction: column; gap: 15px; }
+  #adminDashboard input,
+  #adminDashboard textarea,
+  #adminDashboard button { width: 100%; margin: 5px 0; }
+  #adminDashboard ul li { flex-direction: column; align-items: flex-start; padding: 10px 10px; }
+  #adminDashboard ul li button { width: 100%; margin: 5px 0 0 0; }
+  #studentUpdateForm input { width: 100%; margin: 5px 0; }
+  .input-btn-group { flex-direction: column; }
+  .input-btn-group button { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 20px; }
+  h1, h2 { font-size: 1.2rem; }
+  input, textarea, button { font-size: 0.9rem; }
+  .card { flex: 1 1 100%; padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Role Selection -->
+  <div id="roleSection">
+    <h1>Login as</h1>
+    <button onclick="showSection('adminLogin')">Admin</button>
+    <button onclick="showSection('studentLogin')">Student</button>
+  </div>
+
+  <!-- Admin Login -->
+  <div id="adminLogin" class="hidden">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUsername" placeholder="Username">
+    <input type="password" id="adminPassword" placeholder="Password">
+    <button onclick="adminLogin()">Login</button>
+    <a href="#" onclick="showSection('roleSection')">Back</a>
+  </div>
+
+  <!-- Student Login/Register -->
+  <div id="studentLogin" class="hidden">
+    <h2>Student Login</h2>
+    <input type="text" id="stuLoginUsername" placeholder="Username">
+    <input type="password" id="stuLoginPassword" placeholder="Password">
+    <button onclick="studentLogin()">Login</button>
+    <a href="#" onclick="showSection('studentRegister')">New User? Register here</a>
+    <a href="#" onclick="showSection('roleSection')">Back</a>
+  </div>
+
+  <!-- Student Register -->
+  <div id="studentRegister" class="hidden">
+    <h2>Student Registration</h2>
+    <input type="text" id="regUsername" placeholder="Username">
+    <input type="password" id="regPassword" placeholder="Password">
+    <input type="password" id="regConfirmPassword" placeholder="Confirm Password">
+    <button onclick="registerStudent()">Register</button>
+    <a href="#" onclick="showSection('studentLogin')">Back to Login</a>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <h1>Admin Dashboard</h1>
+    <button onclick="logout()">Logout</button>
+
+    <div class="cards">
+      <div class="card">
+        <h2>Total Students</h2>
+        <p id="totalStudents">0</p>
+      </div>
+      <div class="card">
+        <h2>Total Announcements</h2>
+        <p id="totalAnnouncements">0</p>
+      </div>
+    </div>
+
+    <div>
+      <h2>Custom Student Fields</h2>
+      <div class="input-btn-group">
+        <input type="text" id="newFieldName" placeholder="Enter new field name">
+        <button class="small-btn" onclick="addCustomField()">Add Field</button>
+      </div>
+      <ul id="customFieldList"></ul>
+    </div>
+
+    <div>
+      <h2>Registered Students</h2>
+      <ul id="studentList"></ul>
+    </div>
+
+    <div>
+      <h2>Manage Announcements</h2>
+      <div class="input-btn-group">
+        <input type="text" id="announcementTitle" placeholder="Title">
+        <textarea id="announcementMessage" placeholder="Message"></textarea>
+        <button class="small-btn" onclick="addAnnouncement()">Create</button>
+      </div>
+      <ul id="announcementList"></ul>
+    </div>
+  </div>
+
+  <!-- Student Dashboard -->
+  <div id="studentDashboard" class="hidden">
+    <h1>Welcome, <span id="stuNameDisplay"></span></h1>
+    <button onclick="logout()">Logout</button>
+
+    <h2>Announcements</h2>
+    <ul id="stuAnnouncementList"></ul>
+
+    <h2>Your Personal Details</h2>
+    <div id="studentDetailsBox" class="details-box"></div>
+
+    <h2>Update Your Details</h2>
+    <div id="studentUpdateForm"></div>
+    <button onclick="updateStudentDetails()">Save Details</button>
+  </div>
+
+</div>
+
+<script>
+// ---------------- Section Control ----------------
+function showSection(section){
+  ['roleSection','adminLogin','studentLogin','studentRegister','adminDashboard','studentDashboard']
+    .forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById(section).classList.remove('hidden');
+}
+
+// ---------------- Admin Login ----------------
+function adminLogin(){
+  const u=document.getElementById('adminUsername').value.trim();
+  const p=document.getElementById('adminPassword').value.trim();
+  if(u==='admin' && p==='admin123'){ showAdminDashboard(); }
+  else alert('Invalid admin credentials');
+}
+
+// ---------------- Student Register ----------------
+function registerStudent(){
+  const u=document.getElementById('regUsername').value.trim();
+  const p=document.getElementById('regPassword').value.trim();
+  const c=document.getElementById('regConfirmPassword').value.trim();
+  if(!u||!p||!c){ alert('Fill all fields'); return; }
+  if(p!==c){ alert('Passwords do not match'); return; }
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  if(students.find(s=>s.username===u)){ alert('Username exists'); return; }
+  students.push({username:u,password:p,custom:{}});
+  localStorage.setItem('studentAccounts',JSON.stringify(students));
+  alert('Registration successful!');
+  showSection('studentLogin');
+}
+
+// ---------------- Student Login ----------------
+function studentLogin(){
+  const u=document.getElementById('stuLoginUsername').value.trim();
+  const p=document.getElementById('stuLoginPassword').value.trim();
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  let s=students.find(st=>st.username===u && st.password===p);
+  if(!s){ alert('Invalid username/password'); return; }
+  localStorage.setItem('currentStudent',JSON.stringify(s));
+  showStudentDashboard();
+}
+
+// ---------------- Logout ----------------
+function logout(){
+  localStorage.removeItem('currentStudent');
+  showSection('roleSection');
+}
+
+// ---------------- Custom Fields & Students & Announcements ----------------
+const getCustomFields=()=>JSON.parse(localStorage.getItem('customFields')||'[]');
+const saveCustomFields=f=>localStorage.setItem('customFields',JSON.stringify(f));
+
+function addCustomField(){
+  const f=document.getElementById('newFieldName').value.trim();
+  if(!f){ alert('Enter field'); return; }
+  let fields=getCustomFields();
+  if(fields.includes(f)){ alert('Field exists'); return; }
+  fields.push(f); saveCustomFields(fields);
+  document.getElementById('newFieldName').value='';
+  renderCustomFields(); renderStudents();
+}
+
+function renderCustomFields(){
+  const fields=getCustomFields();
+  document.getElementById('customFieldList').innerHTML=fields.map((f,i)=>`
+    <li>${f} <button class="action-btn" onclick="deleteCustomField(${i})">Delete</button></li>
+  `).join('');
+}
+
+function deleteCustomField(i){
+  if(!confirm('Delete this field?')) return;
+  let fields=getCustomFields();
+  let rem=fields.splice(i,1);
+  saveCustomFields(fields);
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  students.forEach(s=>{ if(s.custom && rem in s.custom) delete s.custom[rem]; });
+  localStorage.setItem('studentAccounts',JSON.stringify(students));
+  renderCustomFields(); renderStudents();
+}
+
+function renderStudents(){
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  const fields=getCustomFields();
+  document.getElementById('studentList').innerHTML=students.map((s,i)=>{
+    let extras=fields.map(f=>`<br><b>${f}:</b> ${s.custom[f]||'N/A'}`).join('');
+    return `<li><b>${s.username}</b>${extras}
+      <button class="edit-btn" onclick="editStudent(${i})">Edit</button>
+      <button class="action-btn" onclick="deleteStudent(${i})">Delete</button></li>`;
+  }).join('');
+  document.getElementById('totalStudents').innerText=students.length;
+}
+
+function deleteStudent(i){
+  if(!confirm('Delete this student?')) return;
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  students.splice(i,1); localStorage.setItem('studentAccounts',JSON.stringify(students));
+  renderStudents();
+}
+
+function editStudent(i){
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  const s=students[i]; const fields=getCustomFields();
+  const newPass=prompt(`Enter new password for ${s.username}`,s.password);
+  if(newPass!==null && newPass!=='') s.password=newPass;
+  fields.forEach(f=>{ const val=prompt(`Value for ${f}`, s.custom[f]||''); if(val!==null) s.custom[f]=val; });
+  students[i]=s; localStorage.setItem('studentAccounts',JSON.stringify(students)); renderStudents();
+}
+
+// ---------------- Announcements ----------------
+const getAnnouncements=()=>JSON.parse(localStorage.getItem('announcements')||'[]');
+const saveAnnouncements=a=>localStorage.setItem('announcements',JSON.stringify(a));
+
+function addAnnouncement(){
+  const t=document.getElementById('announcementTitle').value.trim();
+  const m=document.getElementById('announcementMessage').value.trim();
+  if(!t||!m){ alert('Enter title/message'); return; }
+  let a=getAnnouncements();
+  a.unshift({title:t,message:m,date:new Date().toLocaleString()});
+  saveAnnouncements(a);
+  document.getElementById('announcementTitle').value='';
+  document.getElementById('announcementMessage').value='';
+  renderAnnouncements();
+}
+
+function renderAnnouncements(){
+  const a=getAnnouncements();
+  document.getElementById('announcementList').innerHTML=a.map((x,i)=>`
+    <li><b>${x.title}</b>: ${x.message} (${x.date})
+    <button class="edit-btn" onclick="editAnnouncement(${i})">Edit</button>
+    <button class="action-btn" onclick="deleteAnnouncement(${i})">Delete</button></li>
+  `).join('');
+  document.getElementById('totalAnnouncements').innerText=a.length;
+}
+
+function editAnnouncement(i){
+  let a=getAnnouncements();
+  const t=prompt('Edit title',a[i].title);
+  const m=prompt('Edit message',a[i].message);
+  if(t!==null && m!==null){ a[i].title=t; a[i].message=m; a[i].date=new Date().toLocaleString(); saveAnnouncements(a); renderAnnouncements();}
+}
+
+function deleteAnnouncement(i){
+  let a=getAnnouncements(); a.splice(i,1); saveAnnouncements(a); renderAnnouncements();
+}
+
+// ---------------- Dashboards ----------------
+function showAdminDashboard(){ showSection('adminDashboard'); renderStudents(); renderAnnouncements(); renderCustomFields(); }
+function showStudentDashboard(){
+  showSection('studentDashboard');
+  const s=JSON.parse(localStorage.getItem('currentStudent')||'{}');
+  document.getElementById('stuNameDisplay').innerText=s.username;
+  const a=getAnnouncements();
+  document.getElementById('stuAnnouncementList').innerHTML=a.map(x=>`<li><b>${x.title}</b>: ${x.message} (${x.date})</li>`).join('');
+  const fields=getCustomFields();
+  document.getElementById('studentDetailsBox').innerHTML=fields.map(f=>`<p><b>${f}:</b> ${s.custom[f]||'N/A'}</p>`).join('')||'<p>No details yet.</p>';
+  document.getElementById('studentUpdateForm').innerHTML=fields.map(f=>`<input type="text" id="upd_${f}" placeholder="${f}" value="${s.custom[f]||''}">`).join('');
+}
+
+function updateStudentDetails(){
+  let s=JSON.parse(localStorage.getItem('currentStudent')||'{}');
+  let students=JSON.parse(localStorage.getItem('studentAccounts')||'[]');
+  const fields=getCustomFields();
+  if(!s.custom) s.custom={};
+  fields.forEach(f=>s.custom[f]=document.getElementById(`upd_${f}`).value.trim());
+  students=students.map(x=>x.username===s.username?s:x);
+  localStorage.setItem('studentAccounts',JSON.stringify(students));
+  localStorage.setItem('currentStudent',JSON.stringify(s));
+  alert('Details updated!'); showStudentDashboard();
+}
+
+if(!localStorage.getItem('announcements')) localStorage.setItem('announcements',JSON.stringify([]));
+</script>
+
+</body>
+</html>
